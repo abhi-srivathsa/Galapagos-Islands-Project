@@ -6,10 +6,12 @@ import {StyleSheet, Button, Text, View, TouchableOpacity, Image, Dimensions, Saf
 import OpenMap from "react-native-open-map";
 import { AsyncStorage } from 'react-native';
 import { any } from 'prop-types';
-import { getDatabase, ref} from '@firebase/database';
-import { auth, db, firebaseApp, firebase } from "../../../../App";
+import * as Items from '../../../../app/assets/images/restaurants';
 
-import { getStorage } from '@firebase/storage';
+// import { getDatabase, ref} from '@firebase/database';
+// import { auth, db, firebaseApp, firebase } from "../../../../App";
+
+// import { getStorage } from '@firebase/storage';
 
 //get scaling factors
 const entireScreenWidth = Dimensions.get('window').width;
@@ -141,8 +143,9 @@ const styles = StyleSheet.create ({
       flexWrap: "wrap"
     }
 });
-
+const data = require("../../../../data/Restaurants.json")
 class SantaCruzFood extends React.Component {
+
   constructor() {
     super();
 
@@ -150,17 +153,21 @@ class SantaCruzFood extends React.Component {
       restaurants: []
     };
   }
+
   componentDidMount() {
-    db.ref("/restaurants").on("value", snapshot => {
-    let allRestaurants = [];
-    snapshot.forEach(snap => {
-      allRestaurants.push(snap.val());
-    });
-    this.setState({ restaurants: allRestaurants });
-  });
-
-
+    this.setState({ restaurants: data })
 }
+  // componentDidMount() {
+  //   db.ref("/restaurants").on("value", snapshot => {
+  //   let allRestaurants = [];
+  //   snapshot.forEach(snap => {
+  //     allRestaurants.push(snap.val());
+  //   });
+  //   this.setState({ restaurants: allRestaurants });
+  // });
+
+
+// }
 
     async addToFavorites(name,info){
         let value = await AsyncStorage.getItem('Food');
@@ -195,32 +202,32 @@ class SantaCruzFood extends React.Component {
               style={{width: entireScreenWidth, height: 25*rem}}
           />
           {this.state.restaurants.map(restaurant => {
+            const temp = Items.coffeelab1
             return(
               <View>
               <Text style={styles.regularBold}>{restaurant.name}</Text>
-
               <Swiper style={styles.wrapper} showsButtons={true}>
                 <View style={styles.slide}>
-                    <Image
-                        source={require('../../../../app/assets/images/food/1835-coffee-lab/1.jpg')}
+                <Image
+                        source = { Items[`${restaurant.image1s}`] }
                         style={styles.slideImage}
                     />
                 </View>
                 <View style={styles.slide}>
                     <Image
-                        source={require('../../../../app/assets/images/food/1835-coffee-lab/2.jpg')}
+                        source = { Items[`${restaurant.image2s}`] }
                         style={styles.slideImage}
                     />
                 </View>
                 <View style={styles.slide}>
                     <Image
-                        source={require('../../../../app/assets/images/food/1835-coffee-lab/3.jpg')}
+                        source = { Items[`${restaurant.image3s}`] }
                         style={styles.slideImage}
                     />
                 </View>
                 <View style={styles.slide}>
                     <Image
-                        source={require('../../../../app/assets/images/food/1835-coffee-lab/4.jpg')}
+                    source = { Items[`${restaurant.image4s}`] }
                         style={styles.slideImage}
                     />
                 </View>
@@ -257,7 +264,7 @@ class SantaCruzFood extends React.Component {
               <View style={styles.lastRow}>
                   <TouchableOpacity
                       style = {{flexDirection: "row"}}
-                      onPress={() => OpenMap.show({ latitude: -0.7449591, longitude: -90.3152868 })}>
+                      onPress={() => OpenMap.show({ latitude: restaurant.latitude, longitude: restaurant.longitude })}>
                       <Image
                           source={require('../../../../app/assets/icons/location_gray.png')}
                           style={styles.infoAddress}
@@ -266,9 +273,9 @@ class SantaCruzFood extends React.Component {
                   </TouchableOpacity>
                   <TouchableOpacity
                       style = {{flexDirection: "row"}}
-                      onPress={() => this.addToFavorites( "Coffee Lab",{Name: "Coffee Lab",
-                          Latitude: "-0.7449591", Longitude: "-90.3152", Mail: "oficina@1835coffeelabec.com",
-                          Website: "https:www.coffeelabec.com", Phone: "59352526627", Image:"/../../app/assets/images/food/1835-coffee-lab/1.jpg"})}>
+                      onPress={() => this.addToFavorites( restaurant.name,{Name: restaurant.name,
+                          Latitude: restaurant.latitude, Longitude: restaurant.longitude, Mail: restaurant.email,
+                          Website: "https:www.coffeelabec.com", Phone: restaurant.phoneNo, Image:Items[`${restaurant.image4s}`]})}>
                       <Image
                           source={require('../../../../app/assets/icons/turtleBW.png')}
                           style={styles.infoWeb}
@@ -278,7 +285,7 @@ class SantaCruzFood extends React.Component {
               </View>
               </View>
             );
-          })}
+        })}
 
               <Text style={styles.regularBold}>Bar Bongo</Text>
               <Swiper style={styles.wrapper} showsButtons={true}>
